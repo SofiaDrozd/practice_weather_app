@@ -6,7 +6,7 @@
   "scripts": {
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
-    "homepage": "https://github.com/SofiaDrozd/practice_weather_app",
+    "homepage": "https://SofiaDrozd.github.io/practice_weather_app/",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
