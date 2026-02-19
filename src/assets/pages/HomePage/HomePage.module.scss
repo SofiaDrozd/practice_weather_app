@@ -1,0 +1,14 @@
+.homeWrapper {
+  display: flex;
+  align-items: center; 
+  gap: 40px;          
+  padding: 40px;
+  min-height: 100vh;   
+  box-sizing: border-box;
+}
+
+.content {
+  flex: 1;           
+  display: flex;
+  justify-content: center; 
+}

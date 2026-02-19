@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import getWeather from '../../api'
+import WeatherCard from '../WeatherCard'
+
 
 function WeatherLoader () {
   const [weather, setWeather] = useState(null)
@@ -25,12 +27,7 @@ function WeatherLoader () {
       {error && <div>ERROR {JSON.stringify(error)}</div>}
       {isLoading && <div>LOADING...</div>}
       {!error && !isLoading && weather && (
-        <>
-          <h1>{weather.location.name}</h1>
-          <p>{weather.current.temp_c}°C</p>
-          <p>{weather.current.condition.text}</p>
-          <img src={weather.current.condition.icon} alt='icon' />
-        </>
+        <WeatherCard data={weather}></WeatherCard>
       )}
     </>
   )
