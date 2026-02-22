@@ -1,8 +1,8 @@
-import React from 'react';
-import styles from './SideBar.module.scss';
+import React from 'react'
+import styles from './SideBar.module.scss'
 
-const SideBar = () => {
-  const cities = ['Чернігів', 'Чернігів', 'Чернігів', 'Чернігів', 'Чернігів'];
+function SideBar ({ cities, activeCity, onCitySelect }) {
+  if (!cities) return null
 
   return (
     <div className={styles.sidebar}>
@@ -11,14 +11,20 @@ const SideBar = () => {
 
       <ul className={styles.cityList}>
         {cities.map((city, index) => (
-          <li key={index} className={styles.cityItem}>
+          <li
+            key={index}
+            className={`${styles.cityItem} ${
+              activeCity === city ? styles.active : ''
+            }`}
+            onClick={() => onCitySelect(city)}
+          >
             <span className={styles.locationIcon}>📍</span>
             {city}
           </li>
         ))}
       </ul>
     </div>
-  );
-};
+  )
+}
 
-export default SideBar;
+export default SideBar
