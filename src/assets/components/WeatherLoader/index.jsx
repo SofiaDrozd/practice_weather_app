@@ -9,8 +9,33 @@ function WeatherLoader () {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  const cities = ['Chernihiv', 'Antalya', 'Paris', 'Oslo', 'London']
+  const [cities, setCities] = useState(['Chernihiv', 'Antalya', 'Paris', 'Oslo', 'London'])
   const [activeCity, setActiveCity] = useState(cities[0])
+
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        let latitude = position.coords.latitude;
+        let longitude = position.coords.longitude;
+        let query = `${latitude},${longitude}`;
+
+        getWeather({ name: query })
+          .then(data => {
+            const detectedCity = data.location.name;
+            
+            setCities(prevCities => {
+              if (!prevCities.includes(detectedCity)) {
+                return [detectedCity, ...prevCities];
+              }
+              return prevCities;
+            });
+            
+            setActiveCity(detectedCity);
+          })
+          .catch(error => console.log("Помилка:", error));
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const bgUrl = getWeatherBackground(weather?.current?.condition?.text)
@@ -20,10 +45,13 @@ function WeatherLoader () {
   }, [weather])
 
   const loadWeather = () => {
+    if (!activeCity) return; 
+
     setIsLoading(true)
     getWeather({ name: activeCity })
       .then(data => {
         setWeather(data)
+        setError(null) 
       })
       .catch(e => setError(e))
       .finally(() => setIsLoading(false))
@@ -33,19 +61,40 @@ function WeatherLoader () {
     loadWeather()
   }, [activeCity])
 
+  const handleAddCity = (newCity) => {
+    const trimmedCity = newCity.trim()
+    if (trimmedCity === '' || cities.includes(trimmedCity)) return
+
+    setCities([...cities, trimmedCity])
+    setActiveCity(trimmedCity) 
+  }
+
+  const handleDeleteCity = (cityToDelete) => {
+    const updatedCities = cities.filter(city => city !== cityToDelete)
+    setCities(updatedCities)
+
+    if (activeCity === cityToDelete) {
+      setActiveCity(updatedCities.length > 0 ? updatedCities[0] : null)
+      if (updatedCities.length === 0) setWeather(null)
+    }
+  }
+
   return (
     <>
       <SideBar
         cities={cities}
         activeCity={activeCity}
         onCitySelect={setActiveCity}
-      ></SideBar>
+        onAddCity={handleAddCity}
+        onDeleteCity={handleDeleteCity}
+      />
       <div style={{ flex: 1 }}>
         {error && <div>ERROR {JSON.stringify(error)}</div>}
         {isLoading && <div>LOADING...</div>}
-        {!error && !isLoading && weather && (
+        {!error && !isLoading && weather && activeCity && (
           <WeatherCard data={weather}></WeatherCard>
         )}
+        {!activeCity && <div style={{ color: 'white', padding: '20px' }}>Будь ласка, додайте місто...</div>}
       </div>
     </>
   )
