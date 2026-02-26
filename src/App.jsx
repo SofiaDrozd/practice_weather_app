@@ -1,9 +1,10 @@
-import React from 'react'
-import WeatherLoader from './assets/components/WeatherLoader'
+import HomePage from './assets/pages/HomePage/HomePage'
 
 function App() {
   return (
-   <><WeatherLoader></WeatherLoader></>
+    <div className="App">
+      <HomePage />
+    </div>
   )
 }
 
