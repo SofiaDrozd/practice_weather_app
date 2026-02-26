@@ -32,7 +32,7 @@ function WeatherLoader () {
             
             setActiveCity(detectedCity);
           })
-          .catch(error => console.log("Помилка:", error));
+          .catch(error => console.log("Помилка геолокації:", error));
       });
     }
   }, []);
@@ -63,10 +63,27 @@ function WeatherLoader () {
 
   const handleAddCity = (newCity) => {
     const trimmedCity = newCity.trim()
-    if (trimmedCity === '' || cities.includes(trimmedCity)) return
+    
+    if (trimmedCity === '') return
+    if (cities.includes(trimmedCity)) {
+      alert('Це місто вже є у списку!')
+      return
+    }
 
-    setCities([...cities, trimmedCity])
-    setActiveCity(trimmedCity) 
+    setIsLoading(true) 
+    
+    getWeather({ name: trimmedCity })
+      .then(data => {
+        const realCityName = data.location.name 
+        
+        setCities(prev => [...prev, realCityName])
+        setActiveCity(realCityName)
+        setError(null)
+      })
+      .catch(() => {
+        alert(`Місто "${trimmedCity}" не знайдено в базі даних!`)
+      })
+      .finally(() => setIsLoading(false))
   }
 
   const handleDeleteCity = (cityToDelete) => {
@@ -89,12 +106,12 @@ function WeatherLoader () {
         onDeleteCity={handleDeleteCity}
       />
       <div style={{ flex: 1 }}>
-        {error && <div>ERROR {JSON.stringify(error)}</div>}
+        {error && <div>Помилка: місто не знайдено.</div>}
         {isLoading && <div>LOADING...</div>}
         {!error && !isLoading && weather && activeCity && (
           <WeatherCard data={weather}></WeatherCard>
         )}
-        {!activeCity && <div style={{ color: 'white', padding: '20px' }}>Будь ласка, додайте місто...</div>}
+        {!activeCity && <div>Будь ласка, додайте місто...</div>}
       </div>
     </>
   )

@@ -13,8 +13,13 @@ function SideBar ({
   if (!cities) return null
 
   const handleInputChange = e => {
-    setInputValue(e.target.value)
+  const { value } = e.target
+  const regex = /^[a-zA-Zа-яА-ЯіІїЇєЄґҐ\s\-'’]*$/
+
+  if (regex.test(value)) {
+    setInputValue(value)
   }
+}
 
   const handleAddClick = () => {
     onAddCity(inputValue)
@@ -62,6 +67,7 @@ function SideBar ({
 
             <button
               className={styles.deleteButton}
+              aria-label={`Видалити місто ${city}`}
               onClick={e => {
                 e.stopPropagation()
                 onDeleteCity(city)
